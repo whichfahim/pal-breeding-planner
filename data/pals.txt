@@ -1,0 +1,286 @@
+sheepball|Lamball|1||1|3050||N|111000000000|
+pinkcat|Cattiva|2||1|2760||N|110110000000|
+chickenpal|Chikipi|3||1|3080||N|001100000000|
+carbunclo|Lifmunk|4||1|3020||G|100101110000|
+blueplatypus|Fuack|5||1|2980||W|110000001000|
+blueplatypus_fire|Fuack Ignis|5|B|2|2300||WF|110000002200|
+cutefox|Vixy|6||2|3060||N|001100000000|
+flyingmanta|Celaray|7||3|2740||W|010000001000|
+flyingmanta_thunder|Celaray Lux|7|B|4|2380||WE|010000001020|
+woolfox|Cremis|8||1|2890||N|002100000000|
+kendofrog|Croajiro|9||4|2600||W|110100001000|
+kendofrog_dark|Croajiro Noct|9|B|5|1860||WD|210100001000|
+leafmomonga|Herbil|10||3|2630||GN|010101000000|
+ganesha|Teafant|11||1|3070||W|000000001000|
+plantslime|Gumoss|12||1|2950||GR|000001000000|
+samuraidog|Pupperai|13||2|2930||R|010100100000|
+cloverfairy|Clovee|14||2|2970||GN|000101000000|
+hedgehog|Jolthog|15||1|3030||E|000000000010|
+hedgehog_ice|Jolthog Cryst|15|B|2|2850||I|000000000001|
+negativekoala|Depresso|16||1|3000||D|111010000000|
+penguin|Pengullet|17||1|2960||WI|110000001001|
+penguin_electric|Pengullet Lux|17|B|2|2490||WE|110000001020|
+captainpenguin|Penking|18||6|2070||WI|230030002002|
+captainpenguin_black|Penking Lux|18|B|7|1850||WE|230030002030|
+wizardowl|Hoocrates|19||1|2940||D|000100000000|
+alpaca|Melpaca|20||3|2720||N|002000000000|g
+kingalpaca|Kingpaca|21||8|2220||N|000200000000|g
+kingalpaca_ice|Kingpaca Cryst|21|B|9|1530||I|000200000004|g
+dreamdemon|Daedream|22||1|2910||D|110100000000|
+monkey|Tanzee|23||1|2900||G|110101100000|
+monkey_fire|Tanzee Ignis|23|B|2|2830||F|110000100100|
+nightfox|Nox|24||6|2920||D|000100000000|
+lavagirl|Flambelle|25||1|2700||F|111000000100|
+flamebambi|Rooby|26||2|2870||F|001000000100|
+bastet|Mau|27||1|3040||D|001100000000|
+bastet_ice|Mau Cryst|27|B|2|2750||I|001000000001|
+boar|Rushoar|28||1|2880||R|000010000000|g
+kitsunebi|Foxparks|29||1|2990||F|000000000100|
+kitsunebi_ice|Foxparks Cryst|29|B|1|2500||I|000000000002|
+negativeoctopus|Killamari|30||1|2770||DW|020100001000|
+negativeoctopus_neutral|Killamari Primo|30|B|2|2540||NW|020100001000|
+cutemole|Fuddler|31||1|2790||R|110010000000|
+deer|Eikthyrdeer|32||5|2710||N|000000200000|g
+deer_ground|Eikthyrdeer Terra|32|B|6|2580||R|000000200000|g
+garm|Direhowl|33||2|2680||N|000100000000|g
+berrygoat|Caprity|34||3|2610||G|001002000000|
+berrygoat_dark|Caprity Noct|34|B|3|1940||D|001002000000|
+mopbaby|Swee|35||1|2840||I|000100000001|
+mopking|Sweepa|36||6|2150||I|000200000003|g
+tentacleturtle|Turtacle|37||3|2410||W|010010002000|
+tentacleturtle_ground|Turtacle Terra|37|B|4|1330||WR|010030002000|
+windchimes|Hangyu|38||1|2780||R|120100000000|
+windchimes_ice|Hangyu Cryst|38|B|2|2510||I|330200000002|
+sweetssheep|Woolipop|39||3|2820||N|001000000000|
+sweetssheep_ground|Woolipop Terra|39|B|4|2030||R|001000000000|
+cowpal|Mozzarina|40||2|2800||N|002000000000|
+bluedragon|Azurobe|41||7|1830||WY|000000004000|g
+bluedragon_ice|Azurobe Cryst|41|B|8|1220||IY|000000000004|g
+eleccat|Sparkit|42||1|3010||E|111000000010|
+kelpie|Kelpsea|43||1|2810||W|001000001000|
+kelpie_fire|Kelpsea Ignis|43|B|2|2470||F|001000000100|
+pinkrabbit|Ribbuny|44||1|2860||N|110100000000|
+pinkrabbit_grass|Ribbuny Botan|44|B|1|2460||G|210202000000|
+jellyfishfairy|Jelliette|45||3|2650||W|110000002000|
+jellyfishghost|Jellroy|46||3|2590||WD|110000012000|
+clionetwins|Amione|47||2|2520||W|210000001000|
+octopusgirl|Gloopie|48||5|2530||WD|220000002000|
+octopusgirl_neutral|Gloopie Primo|48|B|6|1630||WN|220000002000|
+eagle|Galeclaw|49||2|2570||N|000200000000|
+ghostblackcat|Wispaw|50||5|2250||D|210000110000|
+hawkbird|Nitewing|51||3|2560||N|000200000000|f
+catbat|Tombat|52||5|2340||D|020230000000|
+colorfulbird|Tocotoco|53||1|2730||N|000100000000|
+kirin|Univolt|54||5|2270||E|000000100030|g
+kirin_ice|Univolt Cryst|54|B|6|540||I|000000300006|g
+sharkkid|Gobfin|55||2|2550||W|210000002000|
+sharkkid_fire|Gobfin Ignis|55|B|3|2430||F|210000000200|
+werewolf|Loupmoon|56||3|2110||D|200000000000|
+werewolf_ice|Loupmoon Cryst|56|B|3|1290||I|400000000004|
+darkcrow|Cawgnito|57||3|2370||D|001000200000|
+flamebuffalo|Arsox|58||4|2320||F|000000200300|g
+fluffybird|Muffly|59||2|2480||I|010000000002|
+littlebriarrose|Bristla|60||1|2690||G|210202020000|
+cutebutterfly|Cinnamoth|61||4|2620||G|000202020000|
+elecpomeranian|Puffolt|62||2|2360||E|010000000020|
+fairydragon|Elphidran|63||7|2280||Y|000000300000|f
+fairydragon_water|Elphidran Aqua|63|B|8|1640||YW|000000304000|f
+birddragon|Vanwyrm|64||5|1650||FD|030000000200|f
+birddragon_ice|Vanwyrm Cryst|64|B|5|1430||ID|030000000002|f
+catvampire|Felbat|65||6|1570||D|000000030000|
+violetfairy|Vaelet|66||8|1480||G|322303030000|
+soldierbee|Beegarde|67||4|2350||G|223302220000|
+queenbee|Elizabee|68||8|1790||G|400404340000|
+pinklizard|Lovander|69||5|2090||D|320020030000|
+naughtycat|Grintale|70||6|2120||N|000300000000|g
+purplespider|Tarantriss|71||3|1730||D|320300020000|g
+iceseal|Polapup|72||5|1660||IW|000000003004|g
+iceseal_ground|Polapup Terra|72|B|6|1100||IR|000040000004|g
+lizardman|Leezpunk|73||2|2670||D|210100000000|
+lizardman_fire|Leezpunk Ignis|73|B|3|2640||F|210100000200|
+gorilla|Gorirat|74||5|2140||N|230000300000|
+gorilla_ground|Gorirat Terra|74|B|5|1880||R|230030000000|
+serpent|Surfent|75||4|2440||W|002000003000|g
+serpent_ground|Surfent Terra|75|B|5|1840||R|000300000000|g
+robinhood|Robinquill|76||5|2260||G|320302210000|
+robinhood_ground|Robinquill Terra|76|B|6|2050||GR|320300220000|
+flowerrabbit|Flopie|77||1|2660||G|210202010000|
+foxmage|Wixen|78||6|2080||F|320000000300|
+foxmage_dark|Wixen Noct|78|B|6|1490||FD|420000000400|
+catmage|Katress|79||6|2040||D|320000030000|
+catmage_fire|Katress Ignis|79|B|6|1800||DF|320000030300|
+hadesbird|Helzephyr|80||7|1130||D|040000000000|f
+hadesbird_electric|Helzephyr Lux|80|B|8|960||DE|050000000040|f
+grassminotaur|Elgrove|81||6|2020||G|030223300000|
+grassminotaur_ice|Elgrove Cryst|81|B|7|440||I|030030300005|
+mutant|Lunaris|82||6|2010||N|420200000000|
+fengyundeeper|Fenglope|83||3|1960||N|000000300000|g
+fengyundeeper_electric|Fenglope Lux|83|B|3|900||E|000000400050|g
+flowerdinosaur|Dinossom|84||6|2100||GY|000003300000|g
+flowerdinosaur_electric|Dinossom Lux|84|B|7|1890||EY|000000400030|g
+ronin|Bushi|85||7|1560||F|220100300200|
+ronin_dark|Bushi Noct|85|B|7|840||FD|220100500200|
+icecrocodile|Munchill|86||3|2130||IW|010000002003|
+grassmammoth|Mammorest|87||8|1340||GR|000044400000|g
+grassmammoth_ice|Mammorest Cryst|87|B|9|1070||IR|000040500005|g
+stuffedshark|Finsider|88||3|2450||W|010000002000|
+stuffedshark_fire|Finsider Ignis|88|B|4|2240||WF|010000002200|
+flowerdoll|Petallia|89||8|1720||G|320304040000|
+flowerdoll_fire|Petallia Ignis|89|B|9|820||GF|320300040400|
+pandagirl|Leafan|90||7|1410||G|320303000000|
+baphomet|Incineram|91||4|1470||FD|220030000300|
+baphomet_dark|Incineram Noct|91|B|5|1310||D|330040000000|
+raijindaughter|Dazzi|92||2|2400||E|220000000030|
+raijindaughter_water|Dazzi Noct|92|B|2|1910||DE|120000010010|
+firekirin|Pyrin|93||6|1980||F|000000200400|g
+firekirin_dark|Pyrin Noct|93|B|7|1870||FD|000000300400|g
+lazydragon|Relaxaurus|94||8|1090||YW|030000003000|g
+lazydragon_electric|Relaxaurus Lux|94|B|9|770||YE|030000000040|g
+icefox|Foxcicle|95||5|1970||I|003000000004|
+thunderbird|Beakon|96||6|1690||E|050200000040|f
+thunderbird_ice|Beakon Cryst|96|B|7|580||I|050200000005|f
+ghostanglerfish|Ghangler|97||5|880||DW|020000005000|g
+ghostanglerfish_fire|Ghangler Ignis|97|B|6|720||FW|020000005500|g
+thunderdog|Rayhound|98||5|1920||E|000000000040|g
+thunderdog_ice|Rayhound Cryst|98|B|6|1600||I|000000000003|g
+darkscorpion|Menasting|99||9|1120||DR|000050300000|
+darkscorpion_ground|Menasting Terra|99|B|10|640||R|000060300000|
+cactusdoll|Needoll|100||2|2420||G|010303000000|
+cactusdoll_dark|Needoll Noct|100|B|3|1580||DG|010303000000|
+icedeer|Reindrix|101||4|1930||I|000000300003|g
+grasspanda|Mossanda|102||6|2060||G|240003400000|g
+grasspanda_electric|Mossanda Lux|102|B|7|1440||E|340000400040|g
+weaseldragon|Chillet|103||4|2330||IY|000100000002|g
+weaseldragon_fire|Chillet Ignis|103|B|5|1950||FY|000300000400|g
+redarmorbird|Ragnahawk|104||7|1050||F|050000000400|f
+volcanodragon|Moldron|105||7|750||FR|000050000500|g
+volcanodragon_ice|Moldron Cryst|105|B|8|380||IR|000050000005|g
+tropicalostrich|Palumba|106||6|1240||G|000454000000|g
+drillgame|Digtoise|107||5|1550||R|000040000000|
+sakurasaurus|Broncherry|108||8|1380||G|000005000000|g
+sakurasaurus_water|Broncherry Aqua|108|B|8|1080||GW|000000005000|g
+lazycatfish|Dumud|109||4|2290||RW|011020002000|
+lazycatfish_gold|Dumud Gild|109|B|5|1620||RW|014020002000|
+plesiosaur|Braloha|110||8|1030||GR|000535000000|g
+amaterasuwolf|Kitsun|111||6|1670||F|000000000300|g
+amaterasuwolf_dark|Kitsun Noct|111|B|6|800||D|000000000400|g
+manticore|Blazehowl|112||7|1360||F|000000300500|g
+manticore_dark|Blazehowl Noct|112|B|8|1270||FD|000000300500|g
+herculesbeetle|Warsect|113||8|1280||RG|350003400000|
+herculesbeetle_ground|Warsect Terra|113|B|9|630||R|250050000000|
+snowpeafowl|Frostplume|114||4|860||I|000200000004|
+darkflamefox|Majex|115||5|1010||DF|520000030400|
+whitemoth|Sibelyx|116||7|1810||I|003000030003|
+whitemoth_neutral|Sibelyx Primo|116|B|8|650||N|004000030000|
+ghostbeast|Maraith|117||6|1710||D|000440000000|g
+mushroomdragon|Shroomer|118||4|1520||G|203303200000|g
+mushroomdragon_dark|Shroomer Noct|118|B|5|1450||GD|300303200000|g
+icewitch|Icelyn|119||4|1260||I|520000040005|
+mummypal|Gildra|120||5|1170||DR|520000040000|
+umihebi|Jormuntide|121||8|590||YW|000000007000|g
+umihebi_fire|Jormuntide Ignis|121|B|9|170||YF|000000000700|g
+suzaku|Suzaku|122||8|1200||F|000000000500|f
+suzaku_water|Suzaku Aqua|122|B|9|740||W|000000006000|f
+featherostrich|Dazemu|123||5|2210||R|000200000000|g
+skydragon|Quivern|124||7|1210||Y|250340000000|f
+skydragon_grass|Quivern Botan|124|B|8|1300||YG|240435000000|f
+leafprincess|Lullu|125||4|1990||G|300203030000|
+smallarmadillo|Kikit|126||4|2310||R|000010000000|
+guardiandog|Yakumo|127||4|2230||N|000200000000|g
+swordcutlassfish|Skutlass|128||5|1420||W|000100404000|
+swordcutlassfish_fire|Skutlass Ignis|128|B|5|1590||WF|000200302300|
+volcanicmonster|Reptyro|129||6|1060||FR|000050000500|g
+volcanicmonster_ice|Reptyro Cryst|129|B|7|600||IR|000050000005|g
+nightbluehorse|Starryon|130||7|1150||D|000500000000|g
+nightbluehorse_neutral|Starryon Primo|130|B|8|430||N|000700000000|g
+rockbeast|Pierdon|131||6|1110||R|000050000000|
+rockbeast_ice|Pierdon Cryst|131|B|7|460||I|000050000006|
+whitetiger|Cryolinx|132||7|1040||I|340000400004|
+whitetiger_ground|Cryolinx Terra|132|B|7|470||R|240050600000|
+smallyeti|Snugloo|133||3|2390||I|220030000003|
+yeti|Wumpo|134||7|830||I|360000500005|g
+yeti_grass|Wumpo Botan|134|B|8|610||G|360003500000|g
+candleghost|Sootseer|135||7|980||DF|302230000300|
+venusflytrap|Carnibora|136||6|1700||G|420406000000|
+kingbahamut|Blazamut|137||9|410||F|000070000600|g
+kingbahamut_dragon|Blazamut Ryu|137|B|10|100|1|YF|000070000600|g
+grassgolem|Dualith|138||8|510||RG|060363500000|g
+grassgolem_dark|Dualith Noct|138|B|8|250||RD|060363500000|g
+anubis|Anubis|139||10|480||R|640060000000|
+sekhmet|Sekhmet|140||5|870||R|620030000000|
+scorpionman|Prixter|141||5|1510||DR|000200420000|
+scorpionman_electric|Prixter Lux|141|B|6|850||ER|000200420030|
+cubeturtle|Tetroise|142||8|790||R|000040000000|g
+cubeturtle_neutral|Tetroise Primo|142|B|8|200||N|000060000000|g
+badcatgirl|Nyafia|143||4|1250||D|430400200000|
+mimicdog|Mimog|144||7|1740|1|N|020100000000|
+darkalien|Xenovader|145||7|1820|1|D|020000300000|
+whitealiendragon|Xenogard|146||9|990|1|Y|000040000000|g
+blueberryfairy|Prunelia|147||5|1390||GD|110203030000|
+ghostrabbit|Nitemary|148||6|1230||D|420000000000|
+ghostrabbit_grass|Nitemary Botan|148|B|7|1320||G|420003000000|
+blackpuppy|Smokie|149||2|1760||D|000200000000|
+blackpuppy_ice|Smokie Cryst|149|B|3|1610||DI|000200000002|
+mysterymask|Omascul|150||4|1140||D|000500000000|
+icenarwhal|Whalaska|151||8|710||IW|000000005006|g
+icenarwhal_fire|Whalaska Ignis|151|B|8|370||IF|000000000506|g
+grassrabbitman|Verdash|152||8|1160||G|530504300000|
+grimgirl|Splatterina|153||4|780||D|620000350000|
+goldenhorse|Gildane|154||8|730||R|000500000000|g
+sifudog|Dogen|155||6|1460||N|430300320000|
+sumodog|Bulldosu|156||4|1190||R|030040000000|g
+whitedeer|Celesdir|157||6|570||N|000400700000|g
+whitedeer_dark|Celesdir Noct|157|B|7|270||D|000400800000|g
+blackmetaldragon|Astegon|158||9|490||YD|300070000000|f
+winggolem|Knocklem|159||9|260||R|070470000000|
+winggolem_fire|Knocklem Ignis|159|B|10|210||F|070070000500|
+whiteshielddragon|Silvegis|160||8|560||Y|000000600000|g
+bluethunderhorse|Azurmane|161||7|420||E|000000000050|g
+longcat|Valentail|162||2|1900||N|000200000000|
+elecsnail|Snock|163||2|1780||E|000000000040|
+elecsnail_ground|Snock Terra|163|B|3|1500||ER|000000000040|
+dandeliongirl|Souffline|164||3|2000||G|020002000000|
+brownrabbit|Lapiron|165||3|1680||R|310420000000|
+hoodghost|Hoodle|166||3|1770||D|110000000000|
+eleclizard|Slowatt|167||4|1750||E|000000000030|
+onighostgirl|Bakemi|168||4|1540||D|320000040000|
+kingsunfish|Solmora|169||4|1370||W|000000004000|g
+kingsunfish_thunder|Solmora Lux|169|B|5|1000||WE|000000004060|g
+sleeverabbit|Lapure|170||4|810||N|600500000000|
+ghostdragon|Eidrolon|171||7|300||YD|060000000000|f
+ghostdragon_fire|Eidrolon Ignis|171|B|8|140||YF|060000000600|f
+thunderfluffybird|Dynamoff|172||6|1400||E|030300000060|f
+redflowerbird|Tropicaw|173||5|1350||G|000505000000|
+foxexorcist|Flaracle|174||7|390||F|620000000700|
+lotusdragon|Ophydia|175||9|230||GW|000007005000|g
+clownrabbit|Dupin|176||7|520||F|520000040700|
+thiefbird|Roujay|177||5|530||D|050500000000|f
+snakegirl|Venusa|178||5|970||D|620600050000|
+mushroomlady|Mycora|179||6|760||G|400406060000|
+lanternbutler|Loomen|180||5|890||DF|400000040400|
+moonchild|Wistella|181||2|1180||D|610000060000|
+monochromequeen|Solenne|182||7|280||DN|820400000000|
+kabukiman|Renjishi|183||7|290||F|650500000800|
+domearmordragon|Aegidron|184||8|30||YR|000080000000|g
+elecpanda|Grizzbolt|185||8|1020|1|E|450000300050|g
+lilyqueen|Lyleen|186||9|240|1|G|500607050000|
+lilyqueen_dark|Lyleen Noct|186|B|10|220|1|D|500600070000|
+thunderdragonman|Orserk|187||9|120|1|YE|340000000080|
+horus|Faleris|188||9|500|1|F|030000000600|f
+horus_water|Faleris Aqua|188|B|9|450|1|W|050000006000|f
+blackgriffon|Shadowbeak|189||10|550|1|D|000200000000|f
+moonqueen|Selyne|190||9|360|1|DN|730000060000|f
+snowtigerbeastman|Bastigor|191||8|50|1|I|000050600008|g
+blueskydragon|Shaolong|192||9|40|1|YW|000500008000|f
+mothman|Silvance|193||8|80|1|G|620406080000|
+flowerprince|Dandilord|194||8|60|1|GD|630508060000|
+nightlady|Bellanoir|195||20|620|1|D|540000050000|
+nightlady_dark|Bellanoir Libero|195|B|20|130|1|D|640000070000|
+darkmechadragon|Xenolord|196||8|400|1|DY|000200000000|f
+legenddeer|Hartalis|197||10|90|1|N|000700700000|g
+saintcentaur|Paladius|198||20|180|1|N|000060600000|g
+blackcentaur|Necromus|199||20|190|1|D|000060600000|g
+icehorse|Frostallion|200||20|150|1|I|000000000007|f
+icehorse_dark|Frostallion Noct|200|B|20|110|1|D|000700000000|f
+poseidonorca|Neptilius|201||20|160|1|W|000000007000|g
+jetdragon|Jetragon|202||20|70|1|Y|000800000000|f

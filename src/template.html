@@ -1,0 +1,605 @@
+<title>Pal Breeding Planner</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@500;700;800&family=Noto+Sans+JP:wght@400;500;600;700&family=Outfit:wght@400;500;600&display=swap">
+<style>
+/* Palette and type follow Pocketpair's Palworld site: #333 ink on #f8f8f8, Palworld cyan #00b4cd for selection, signature red #ed2d34 for actions; M PLUS Rounded 1c display, Noto Sans JP body, Outfit for data labels.
+   Layout: sticky top bar + two-pane workspace — a fixed-height, filterable pal picker on the left, a sticky result panel on the right. */
+:root{
+  --bg:#f8f8f8; --surface:#ffffff; --surface-2:#f0f0f0; --ink:#333333; --muted:#6e6e6e; --line:#dddddd;
+  --accent:#00b4cd; --accent-text:#007d8f; --accent-soft:#e2f6f9; --accent-ink:#ffffff; --red:#ed2d34; --red-ink:#ffffff; --dark:#222222;
+  --warn:#c2410c; --warn-soft:#fdeee4; --ok:#1e8a4a; --ok-soft:#e1f4e8;
+  --r-common:#8a948f; --r-rare:#2c74cf; --r-epic:#8848cf; --r-legend:#c98a0c;
+  --el-N:#9c9584; --el-F:#e25c2a; --el-W:#2d8ade; --el-G:#45a649; --el-E:#d9b10e; --el-I:#4fbfd4; --el-R:#a26c33; --el-D:#6a4d9a; --el-Y:#b0469f;
+  --shadow:0 1px 2px rgba(0,0,0,.06),0 6px 18px rgba(0,0,0,.07);
+  --f-display:"M PLUS Rounded 1c","Hiragino Maru Gothic ProN","Arial Rounded MT Bold",system-ui,sans-serif; --f-body:"Noto Sans JP","Helvetica Neue",Arial,"Hiragino Sans",Meiryo,sans-serif; --f-mono:"Outfit","Helvetica Neue",Arial,sans-serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#181818; --surface:#222222; --surface-2:#2c2c2c; --ink:#eeeeee; --muted:#a3a3a3; --line:#3a3a3a;
+  --accent:#00b4cd; --accent-text:#4fd3e6; --accent-soft:#0d3237; --accent-ink:#ffffff; --red:#ef3d43; --red-ink:#ffffff; --dark:#111111;
+  --warn:#f59e6b; --warn-soft:#3a2418; --ok:#5fd18f; --ok-soft:#173022;
+  --r-common:#9aa5a0; --r-rare:#5b9cf0; --r-epic:#b07ff0; --r-legend:#f0b53a; --shadow:0 1px 2px rgba(0,0,0,.3),0 8px 24px rgba(0,0,0,.25); color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#181818; --surface:#222222; --surface-2:#2c2c2c; --ink:#eeeeee; --muted:#a3a3a3; --line:#3a3a3a;
+  --accent:#00b4cd; --accent-text:#4fd3e6; --accent-soft:#0d3237; --accent-ink:#ffffff; --red:#ef3d43; --red-ink:#ffffff; --dark:#111111;
+  --warn:#f59e6b; --warn-soft:#3a2418; --ok:#5fd18f; --ok-soft:#173022;
+  --r-common:#9aa5a0; --r-rare:#5b9cf0; --r-epic:#b07ff0; --r-legend:#f0b53a; --shadow:0 1px 2px rgba(0,0,0,.3),0 8px 24px rgba(0,0,0,.25); color-scheme:dark}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html,body{height:100%}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:14px;line-height:1.45}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--surface)}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.wrap{padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+
+/* top bar */
+.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--surface);border-bottom:3px solid var(--accent)}
+.top .wrap{display:flex;align-items:center;gap:16px;flex-wrap:wrap;padding-block:10px;max-width:1440px;margin:0 auto}
+.brand{display:flex;align-items:center;gap:10px;margin-right:auto}
+.brand h1{font-family:var(--f-display);font-weight:800;font-size:21px;margin:0;letter-spacing:.2px}
+.sphere{width:26px;height:26px;border-radius:50%;background:linear-gradient(var(--red) 0 46%,var(--ink) 46% 54%,var(--surface-2) 54%);border:2px solid var(--ink);position:relative;flex:none}
+.sphere::after{content:"";position:absolute;inset:50% auto auto 50%;width:8px;height:8px;margin:-4px 0 0 -4px;border-radius:50%;background:var(--surface);border:2px solid var(--ink)}
+.tabs{display:flex;gap:4px;background:var(--surface-2);padding:4px;border-radius:12px}
+.tabs a{padding:7px 14px;border-radius:9px;text-decoration:none;color:var(--muted);font-weight:600;white-space:nowrap}
+.tabs a[aria-current="page"]{background:var(--dark);color:#fff;box-shadow:var(--shadow)}
+.owned-pill{font-size:13px;color:var(--muted);white-space:nowrap}
+.owned-pill b{color:var(--ink);font-variant-numeric:tabular-nums}
+
+main{max-width:1440px;margin:0 auto;padding-block:16px 40px}
+.view{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:16px;align-items:start}
+.view.pals-view{grid-template-columns:1fr}
+@media (max-width:900px){.view{grid-template-columns:1fr}}
+
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:14px;min-width:0}
+.panel-head{padding:12px 14px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.panel-head h2{font-family:var(--f-display);font-size:17px;font-weight:800;margin:0}
+.hint{color:var(--muted);font-size:13px}
+.sticky{position:sticky;top:calc(env(safe-area-inset-top,0px) + 72px);max-height:calc(100vh - 92px);overflow:auto}
+@media (max-width:900px){.sticky{position:static;max-height:none}}
+
+/* picker */
+.filters{padding:10px 14px;display:grid;gap:8px;border-bottom:1px solid var(--line)}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.search{flex:1 1 200px;min-width:0;position:relative}
+.search input{width:100%;padding:8px 12px 8px 32px;border:1px solid var(--line);border-radius:10px;background:var(--bg)}
+.search svg{position:absolute;left:10px;top:50%;transform:translateY(-50%);width:15px;height:15px;color:var(--muted)}
+select{padding:7px 8px;border:1px solid var(--line);border-radius:10px;background:var(--bg);max-width:100%}
+.iconbtn{border:1px solid var(--line);background:var(--bg);border-radius:10px;padding:7px 10px;line-height:1;display:inline-flex;align-items:center;gap:6px}
+.iconbtn[aria-pressed="true"]{background:var(--accent-soft);border-color:var(--accent);color:var(--ink)}
+.chips{display:flex;gap:5px;flex-wrap:wrap}
+.chip{border:1px solid var(--line);background:var(--bg);border-radius:999px;padding:3px 10px 3px 4px;display:inline-flex;align-items:center;gap:6px;font-size:12.5px;font-weight:600;color:var(--muted)}
+.chip .dot{width:16px;height:16px;border-radius:50%;flex:none}
+.chip[aria-pressed="true"]{color:var(--ink);border-color:currentColor;background:var(--surface)}
+.chip.plain{padding:3px 10px}
+.count{font-size:12.5px;color:var(--muted);font-variant-numeric:tabular-nums;margin-left:auto}
+.seg{display:flex;gap:4px;background:var(--surface-2);padding:4px;border-radius:12px;max-width:100%;overflow-x:auto;justify-self:start}
+.seg button{white-space:nowrap}
+.filters>*{min-width:0}
+.filters .row>*{min-width:0}
+.seg button{border:0;background:none;padding:6px 14px;border-radius:9px;font-weight:600;color:var(--muted)}
+.seg button[aria-pressed="true"]{background:var(--surface);color:var(--ink);box-shadow:var(--shadow)}
+.seg .n{font-variant-numeric:tabular-nums;font-weight:500;opacity:.75}
+.linkbtn{background:none;border:0;color:var(--accent-text);font-weight:600;padding:0;font-size:12.5px}
+
+.grid{height:min(64vh,640px);min-height:320px;overflow:auto;padding:10px;display:grid;grid-template-columns:repeat(auto-fill,minmax(172px,1fr));gap:6px;align-content:start}
+.grid.list{grid-template-columns:1fr;gap:2px}
+@media (max-width:900px){.grid{height:52vh}}
+.tile{display:flex;align-items:center;gap:8px;padding:6px 8px;border:1px solid transparent;border-radius:10px;background:var(--surface-2);text-align:left;min-width:0;position:relative}
+.tile:hover{border-color:var(--line);background:var(--surface)}
+.tile[aria-pressed="true"]{border-color:var(--accent);background:var(--accent-soft)}
+.tile.owned-mode.is-owned{background:var(--ok-soft);border-color:color-mix(in srgb,var(--ok) 50%,transparent)}
+.tile .meta{min-width:0;flex:1;display:grid;gap:1px}
+.tile .nm{font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tile .sub{font-size:11.5px;color:var(--muted);display:flex;gap:6px;align-items:center;white-space:nowrap;overflow:hidden}
+.grid.list .tile{padding:4px 8px}
+.grid.list .tile .meta{grid-template-columns:minmax(0,1fr) minmax(0,1.6fr);align-items:center;gap:10px}
+.status{font-size:11px;font-weight:700;border-radius:6px;padding:1px 6px;white-space:nowrap;font-variant-numeric:tabular-nums}
+.st-own{color:var(--ok);background:var(--ok-soft)}
+.st-breed{color:var(--accent-text);background:var(--accent-soft)}
+.st-no{color:var(--muted);background:var(--bg)}
+.tile .sub .status{margin-left:auto}
+.tw{position:relative;min-width:0;display:grid}
+.tile.has-tog .nm{padding-right:24px}
+.owntog{position:absolute;top:5px;right:5px;width:22px;height:22px;border-radius:50%;border:1.5px solid var(--line);background:var(--surface);color:var(--muted);font-weight:700;font-size:13px;line-height:1;display:grid;place-items:center;padding:0}
+.owntog:hover{border-color:var(--ok);color:var(--ok)}
+.owntog.on{background:var(--ok);border-color:var(--ok);color:var(--surface)}
+.grid.list .owntog{top:50%;transform:translateY(-50%)}
+.grid.list .tile.has-tog{padding-right:34px}
+.grid.list .tile.has-tog .nm{padding-right:0}
+.wk{font-size:11px;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.fgroup{display:grid;gap:6px}
+.frow{display:grid;grid-template-columns:58px minmax(0,1fr);gap:8px;align-items:start}
+.flabel{font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);padding-top:5px}
+@media (max-width:480px){.frow{grid-template-columns:52px minmax(0,1fr);gap:4px}.ib{width:30px;height:30px}.ib img{width:22px;height:22px}.flabel{font-size:10px}.rseg button{padding:5px 7px}}
+.ibar{display:flex;flex-wrap:wrap;gap:3px;align-items:center;min-width:0}
+.ib{width:34px;height:34px;border-radius:9px;border:1.5px solid transparent;background:none;display:grid;place-items:center;padding:0}
+.ib img{width:24px;height:24px;filter:grayscale(1);opacity:.42;transition:filter .15s,opacity .15s}
+.ib:hover img{filter:none;opacity:.85}
+.ib[aria-pressed="true"]{border-color:var(--c);background:color-mix(in srgb,var(--c) 16%,var(--surface))}
+.ib[aria-pressed="true"] img{filter:none;opacity:1}
+.ibar:not(:has([aria-pressed="true"])) .ib img{opacity:1;filter:none}
+.picked{font-size:12px;color:var(--muted);margin-left:6px;min-width:0}
+.rseg{display:flex;flex-wrap:wrap;background:var(--surface-2);border-radius:10px;padding:3px;gap:2px;justify-self:start}
+.rseg button{border:0;background:none;border-radius:8px;padding:5px 10px;font-size:12.5px;font-weight:600;color:var(--muted);display:flex;gap:6px;align-items:center}
+.rseg i{width:9px;height:9px;border-radius:50%;background:var(--c)}
+.rseg button[aria-pressed="true"]{background:var(--surface);color:var(--ink);box-shadow:var(--shadow)}
+.match{border:0;background:none;color:var(--accent-text);font-weight:600;font-size:12.5px;padding:4px 6px}
+.flabel{padding-top:9px}
+.group-h{grid-column:1/-1;font-family:var(--f-display);font-weight:600;font-size:13px;color:var(--muted);padding:6px 2px 0;display:flex;align-items:center;gap:6px;position:sticky;top:-10px;background:var(--surface);z-index:1}
+.empty{grid-column:1/-1;padding:30px 10px;text-align:center;color:var(--muted)}
+
+/* avatar */
+.av{width:34px;height:34px;border-radius:50%;flex:none;display:grid;place-items:center;font-family:var(--f-display);font-weight:600;font-size:13px;color:#fff;text-shadow:0 1px 2px rgba(0,0,0,.45);position:relative}
+.av.pic{padding:2px}
+.av img{width:100%;height:100%;border-radius:50%;background:var(--surface);display:block;object-fit:cover}
+.av{width:38px;height:38px}
+.av.sm{width:26px;height:26px;font-size:11px}
+.av.lg{width:64px;height:64px;font-size:21px}
+.av.lg.pic{padding:3px}
+.av .rb{position:absolute;bottom:-2px;right:-2px;width:11px;height:11px;border-radius:50%;border:2px solid var(--surface)}
+.pips{display:inline-flex;gap:2px}
+.pips i{width:5px;height:5px;border-radius:50%;background:currentColor;display:block}
+.mono{font-family:var(--f-mono);font-size:11.5px}
+
+/* result */
+.res{padding:14px;display:grid;gap:16px}
+.hero{display:flex;gap:14px;align-items:center}
+.hero h3{font-family:var(--f-display);font-size:24px;font-weight:800;margin:0;line-height:1.1;text-wrap:balance}
+.hero .line{display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin-top:5px}
+.tag{font-size:12px;font-weight:600;border-radius:6px;padding:2px 7px;background:var(--surface-2);color:var(--muted);white-space:nowrap}
+.eltag{color:#fff;text-shadow:0 1px 1px rgba(0,0,0,.35);display:inline-flex;align-items:center;gap:4px;padding-left:3px}
+.eltag img{width:16px;height:16px}
+.facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:8px}
+.fact{background:var(--surface-2);border-radius:10px;padding:8px 10px}
+.fact .k{font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:600}
+.fact .v{font-family:var(--f-display);font-size:20px;font-weight:800;font-variant-numeric:tabular-nums}
+.work{display:flex;gap:5px;flex-wrap:wrap}
+.work span{font-size:12px;border:1px solid var(--line);border-radius:6px;padding:1px 7px;white-space:nowrap}
+.work b{font-variant-numeric:tabular-nums}
+.sec-h{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap}
+.sec-h h4{font-family:var(--f-display);font-weight:800;font-size:16px;margin:0}
+.callout{border-radius:10px;padding:10px 12px;font-weight:500}
+.callout.ok{background:var(--ok-soft);color:var(--ok)}
+.callout.warn{background:var(--warn-soft);color:var(--warn)}
+.steps{list-style:none;margin:0;padding:0;display:grid;gap:8px;counter-reset:s}
+.step{display:grid;grid-template-columns:28px minmax(0,1fr);gap:10px;align-items:start}
+.step .n{width:26px;height:26px;border-radius:50%;background:var(--ink);color:var(--surface);display:grid;place-items:center;font-weight:700;font-size:12.5px;font-variant-numeric:tabular-nums;margin-top:5px}
+.step.final .n{background:var(--red);color:var(--red-ink)}
+.eq{display:flex;align-items:center;gap:6px;flex-wrap:wrap;background:var(--surface-2);border-radius:10px;padding:6px 8px}
+.eq .op{color:var(--muted);font-weight:700}
+.pchip{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:2px 9px 2px 2px;font-weight:600;font-size:13px;min-width:0;max-width:100%}
+.pchip .t{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pchip small{font-size:10.5px;font-weight:700;color:var(--muted)}
+.pchip.own small{color:var(--ok)}
+.pchip.made small{color:var(--accent-text)}
+.pchip.child{border-color:var(--accent)}
+.alts{display:grid;gap:4px}
+.alt{display:flex;align-items:center;gap:6px;flex-wrap:wrap;padding:5px 6px;border-radius:10px;border:1px solid var(--line)}
+.alt.on{border-color:var(--accent);background:var(--accent-soft)}
+.alt .cost{margin-left:auto;font-size:12px;color:var(--muted);white-space:nowrap;font-variant-numeric:tabular-nums}
+.btn{border:1.5px solid var(--red);background:var(--red);color:var(--red-ink);border-radius:999px;padding:7px 14px;font-weight:700}
+.btn.ghost{background:transparent;color:var(--red)}
+.btn.sm{padding:3px 9px;font-size:12.5px;border-radius:8px}
+.placeholder{padding:40px 16px;text-align:center;color:var(--muted)}
+.placeholder b{display:block;font-family:var(--f-display);font-size:18px;color:var(--ink);margin-bottom:4px}
+
+/* calculator */
+.slots{display:grid;grid-template-columns:1fr auto 1fr;gap:8px;align-items:stretch}
+@media (max-width:480px){.slots{grid-template-columns:1fr}}
+.slot{border:2px dashed var(--line);border-radius:12px;padding:10px;background:var(--surface-2);text-align:left;display:grid;gap:6px;min-width:0}
+.slot.active{border-style:solid;border-color:var(--accent);background:var(--accent-soft)}
+.slot .lbl{font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:700;display:flex;justify-content:space-between}
+.slot .who{display:flex;align-items:center;gap:8px;font-weight:600;min-width:0}
+.slot .who span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.mid{display:grid;place-items:center;gap:4px}
+.gbtn{border:1px solid var(--line);background:var(--surface);border-radius:8px;padding:2px 8px;font-weight:700}
+.result-card{display:flex;align-items:center;gap:12px;border:1px solid var(--accent);border-radius:12px;padding:12px;background:var(--accent-soft)}
+.result-card h3{margin:0;font-family:var(--f-display);font-size:20px;font-weight:800}
+.table-wrap{overflow:auto;max-height:420px;border:1px solid var(--line);border-radius:10px}
+table{border-collapse:collapse;width:100%;font-size:13px}
+th,td{text-align:left;padding:5px 8px;border-bottom:1px solid var(--line);white-space:nowrap}
+th{position:sticky;top:0;background:var(--surface-2);font-size:11.5px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);cursor:pointer}
+td.num{font-variant-numeric:tabular-nums}
+tr.clickable{cursor:pointer}
+tr.clickable:hover td{background:var(--surface-2)}
+
+/* my pals tools */
+.tools{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+textarea{width:100%;min-height:70px;border:1px solid var(--line);border-radius:10px;background:var(--bg);padding:8px 10px;resize:vertical}
+.importbox{padding:12px 14px;border-bottom:1px solid var(--line);display:grid;gap:8px}
+.toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--surface);padding:8px 14px;border-radius:10px;font-weight:600;z-index:20;opacity:0;transition:opacity .2s;pointer-events:none}
+.toast.show{opacity:1}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+footer{max-width:1440px;margin:0 auto;color:var(--muted);font-size:12.5px;padding-block:0 30px}
+</style>
+
+<header class="top">
+  <div class="wrap">
+    <div class="brand"><span class="sphere" aria-hidden="true"></span><h1>Pal Breeding Planner</h1></div>
+    <nav class="tabs" aria-label="Sections">
+      <a href="#path" data-tab="path">Path finder</a>
+      <a href="#calculator" data-tab="calculator">Calculator</a>
+      <a href="#my-pals" data-tab="my-pals">My Pals</a>
+    </nav>
+    <div class="owned-pill"><b id="ownedCount">0</b> owned · <b id="reachCount">0</b> breedable</div>
+  </div>
+</header>
+
+<main class="wrap">
+  <section id="v-path" class="view" hidden>
+    <div class="panel" id="pathPicker"></div>
+    <div class="panel sticky" id="pathResult"></div>
+  </section>
+  <section id="v-calculator" class="view" hidden>
+    <div class="panel" id="calcPicker"></div>
+    <div class="panel sticky" id="calcResult"></div>
+  </section>
+  <section id="v-my-pals" class="view pals-view" hidden>
+    <div class="panel" id="palsPanel">
+      <div class="panel-head">
+        <h2>My Pals</h2>
+        <span class="hint">Click a Pal to mark it owned or not owned. Filters apply to the bulk buttons too.</span>
+      </div>
+      <div class="importbox">
+        <label for="importText" class="hint">Paste a palworld.gg breeding-path link, or a list of Pal names separated by commas</label>
+        <textarea id="importText" placeholder="https://palworld.gg/breeding-path?own=lamball,cattiva  or  Lamball, Cattiva, Anubis"></textarea>
+        <div class="tools">
+          <button class="btn sm" id="importAdd">Add to my Pals</button>
+          <button class="btn sm ghost" id="importReplace">Replace my Pals</button>
+          <span style="flex:1"></span>
+          <button class="iconbtn" id="markAll">Mark shown as owned</button>
+          <button class="iconbtn" id="unmarkAll">Unmark shown</button>
+          <button class="iconbtn" id="copyLink">Copy palworld.gg link</button>
+          <button class="iconbtn" id="resetOwned">Reset to starting list</button>
+        </div>
+      </div>
+      <div id="palsPicker"></div>
+    </div>
+  </section>
+</main>
+<footer class="wrap">Breeding data matches palworld.gg (breed power, unique combos and tie rules). Terraria crossover Pals are left out. Same-species and gender-specific combos assume you have both a male and a female.<br>Breeding data and icons via <a href="https://palworld.gg" target="_blank" rel="noopener" style="color:var(--accent-text)">palworld.gg</a>. Palworld and all Pal artwork © Pocketpair, Inc. This is an unofficial fan tool, not affiliated with Pocketpair.</footer>
+<div class="toast" id="toast" role="status"></div>
+
+<script>
+const RAW_PALS=`__PALS__`;
+const RAW_COMBOS=`__COMBOS__`;
+const ICONS=__ICONS__;
+const UIICON=__UIICON__;
+const START_OWNED="__OWNED__".split(',');
+
+/* ---------- data ---------- */
+const EL={N:'Neutral',F:'Fire',W:'Water',G:'Grass',E:'Electric',I:'Ice',R:'Ground',D:'Dark',Y:'Dragon'};
+const EL_ORDER='NFWGEIRDY';
+const WORK=[['Handcraft','Handiwork'],['Transport','Transporting'],['MonsterFarm','Farming'],['Collection','Gathering'],['Mining','Mining'],['Seeding','Planting'],['Deforest','Lumbering'],['ProductMedicine','Medicine'],['Watering','Watering'],['EmitFlame','Kindling'],['GenerateElectricity','Electricity'],['Cool','Cooling']];
+const RARITY=r=>r>=20?['Legendary','legend']:r>=8?['Epic','epic']:r>=5?['Rare','rare']:['Common','common'];
+const PALS=RAW_PALS.trim().split('\n').map(l=>{const [id,name,idx,v,rar,rank,ign,el,work,m]=l.split('|');
+  return {id,name,idx:+idx,v:v||'',rar:+rar,rank:+rank,ign:!!ign,el:el.split(''),work:work.split('').map(Number),mount:m||''}});
+const BY=Object.fromEntries(PALS.map(p=>[p.id,p]));
+const COMBOS=RAW_COMBOS.trim().split('\n').map(l=>{const [a,b,child,ga,gb]=l.split(' ');return {a,b,child,ga:ga||'',gb:gb||''}});
+const COMBO_CHILD=new Set(COMBOS.map(c=>c.child));
+const PAIR=new Map(); // "a|b" -> combos (both orientations stored)
+for(const c of COMBOS){for(const k of [c.a+'|'+c.b,c.b+'|'+c.a]){if(!PAIR.has(k))PAIR.set(k,[]);PAIR.get(k).push(c)}}
+const NORMAL_POOL=PALS.filter(p=>!COMBO_CHILD.has(p.id)&&!p.ign);
+const MAXR=Math.max(...PALS.map(p=>p.rank))+1;const NEAR=new Array(MAXR+1);
+for(let r=0;r<=MAXR;r++){let t=null,d=Infinity;for(const p of NORMAL_POOL){const x=Math.abs(p.rank-r);if(x<d||(x===d&&p.rank>t.rank)){d=x;t=p}}NEAR[r]=t}
+
+/* child of a (gender ga) x b (gender gb), exactly as palworld.gg computes it */
+function breed(aId,bId,ga='M',gb='F'){
+  const ok=(req,g)=>!req||req===g;
+  for(const c of PAIR.get(aId+'|'+bId)||[]){
+    if(c.a===aId&&c.b===bId&&ok(c.ga,ga)&&ok(c.gb,gb))return c.child;
+    if(c.a===bId&&c.b===aId&&ok(c.ga,gb)&&ok(c.gb,ga))return c.child;
+  }
+  if(aId===bId)return aId;
+  return NEAR[(BY[aId].rank+BY[bId].rank+1)>>1].id;
+}
+/* every possible child of an unordered pair, with the genders needed */
+function outcomes(a,b){
+  const r1=breed(a,b,'M','F'),r2=breed(a,b,'F','M');
+  if(r1===r2)return [{child:r1,ga:'',gb:''}];
+  return [{child:r1,ga:'M',gb:'F'},{child:r2,ga:'F',gb:'M'}];
+}
+
+/* ---------- state ---------- */
+const LS=(k,v)=>{try{if(v===undefined)return JSON.parse(localStorage.getItem(k));localStorage.setItem(k,JSON.stringify(v))}catch(e){return null}};
+let owned=new Set((LS('pbp-owned')||START_OWNED).filter(id=>BY[id]));
+let plan={cost:new Map(),via:new Map(),gen:new Map()};
+const ui=Object.assign({target:'anubis',alt:null,altOnlyReach:true,altShow:30,calcA:'flamebuffalo',calcB:'kitsunebi',ga:'M',gb:'F',slot:'A'},LS('pbp-ui')||{});
+function saveUI(){LS('pbp-ui',{target:ui.target,calcA:ui.calcA,calcB:ui.calcB,slot:ui.slot,altOnlyReach:ui.altOnlyReach})}
+
+/* ---------- path solver: cheapest number of breeds from owned Pals ---------- */
+function solve(){
+  const cost=new Map(),via=new Map();
+  for(const id of owned)cost.set(id,0);
+  for(let pass=0;pass<40;pass++){
+    let changed=false;const R=[...cost.keys()];
+    for(let i=0;i<R.length;i++){const a=R[i],ca=cost.get(a);
+      for(let j=i;j<R.length;j++){const b=R[j],cb=cost.get(b);
+        const base=(a===b?ca:ca+cb)+1;
+        for(const o of outcomes(a,b)){
+          if(o.child===a&&a===b)continue;
+          const cur=cost.get(o.child);
+          if(cur===undefined||base<cur){cost.set(o.child,base);via.set(o.child,{a,b,ga:o.ga,gb:o.gb});changed=true}
+        }}}
+    if(!changed)break;
+  }
+  const gen=new Map();
+  const g=id=>{if(gen.has(id))return gen.get(id);if(owned.has(id)){gen.set(id,0);return 0}const v=via.get(id);const x=1+Math.max(g(v.a),g(v.b));gen.set(id,x);return x};
+  for(const id of cost.keys())g(id);
+  plan={cost,via,gen};
+}
+function buildSteps(target,rootPair){
+  const steps=[],seen=new Set();
+  const walk=id=>{if(owned.has(id)||seen.has(id))return;seen.add(id);const v=plan.via.get(id);if(!v)return;walk(v.a);walk(v.b);steps.push({...v,child:id})};
+  if(rootPair){walk(rootPair.a);walk(rootPair.b);steps.push({...rootPair,child:target})}else walk(target);
+  return steps;
+}
+
+/* ---------- small renderers ---------- */
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+function initials(n){const w=n.split(' ');return (w.length>1?w[0][0]+w[1][0]:n.slice(0,2)).toUpperCase()}
+function avatar(p,size=''){
+  const c=p.el.map(e=>`var(--el-${e})`);
+  const bg=c.length>1?`linear-gradient(135deg,${c[0]} 50%,${c[1]} 50%)`:c[0];
+  const img=ICONS[p.id];
+  return `<span class="av ${size}${img?' pic':''}" style="background:${bg}" aria-hidden="true">${img?`<img src="${img}" alt="" loading="lazy" decoding="async">`:esc(initials(p.name))}<i class="rb" style="background:var(--r-${RARITY(p.rar)[1]})"></i></span>`;
+}
+const dex=p=>'#'+String(p.idx).padStart(3,'0')+p.v;
+function pips(p){const n=p.rar>=20?5:p.rar>=8?4:p.rar>=5?3:p.rar>=3?2:1;return `<span class="pips" style="color:var(--r-${RARITY(p.rar)[1]})" title="${RARITY(p.rar)[0]} · rarity ${p.rar}">${'<i></i>'.repeat(n)}</span>`}
+function statusOf(id){if(owned.has(id))return ['Owned','st-own'];const c=plan.cost.get(id);if(c!==undefined)return [c+(c===1?' breed':' breeds'),'st-breed'];return ['No path','st-no']}
+function pchip(id,kind=''){const p=BY[id];const own=owned.has(id);
+  const note=kind==='child'?'':own?'OWNED':'';
+  return `<button class="pchip ${own?'own':kind==='made'?'made':''} ${kind==='child'?'child':''}" data-goto="${id}" title="Show ${esc(p.name)}">${avatar(p,'sm')}<span class="t">${esc(p.name)}</span>${note?`<small>${note}</small>`:''}</button>`}
+const gsym=g=>g==='M'?' ♂':g==='F'?' ♀':'';
+let toastT;function toast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');clearTimeout(toastT);toastT=setTimeout(()=>t.classList.remove('show'),1800)}
+
+function toggleOwned(id){const had=owned.has(id);had?owned.delete(id):owned.add(id);ownedChanged();toast(had?`${BY[id].name} removed from My Pals`:`${BY[id].name} marked as owned`)}
+function ownBtn(id){const o=owned.has(id);return `<button class="btn sm ${o?'ghost':''}" data-own="${id}">${o?'✓ Owned · remove':'+ Mark as owned'}</button>`}
+
+/* ---------- picker (shared by all three views) ---------- */
+const SORTS=[['dex','Paldex #'],['name','Name'],['type','Element'],['rarity','Rarity'],['power','Breed power'],['steps','Breeds needed'],['work','Work level']];
+const RAR_OPTS=[['all','Any rarity'],['common','Common 1–4'],['rare','Rare 5–7'],['epic','Epic 8–10'],['legend','Legendary']];
+const STATUS_OPTS=[['all','All Pals'],['missing','Not owned'],['owned','Owned'],['breedable','Breedable now'],['nopath','No path yet']];
+function makePicker(host,opts){
+  const key='pbp-pick-'+opts.key;
+  const st=Object.assign({q:'',els:[],rars:[],works:[],workAll:false,status:opts.defaultStatus||'all',sort:'dex',dir:1,view:'grid',group:false,fold:false},LS(key)||{},{q:''});
+  if(!Array.isArray(st.rars))st.rars=[];if(!Array.isArray(st.works))st.works=[];delete st.rar;delete st.work;
+  host.insertAdjacentHTML('beforeend',`
+    ${opts.title?`<div class="panel-head"><h2>${opts.title}</h2><span class="hint">${opts.hint||''}</span></div>`:''}
+    <div class="filters">
+      ${`<div class="seg" role="group" aria-label="Show">${(opts.mode==='own'?[['all','All'],['missing','Not owned'],['owned','Owned']]:[['all','All'],['missing','Not owned'],['owned','Owned'],['breedable','Breedable now'],['nopath','No path yet']]).map(o=>`<button data-seg="${o[0]}" aria-pressed="false">${o[1]} <span class="n" data-segn="${o[0]}"></span></button>`).join('')}</div>`}
+      <div class="row">
+        <label class="search"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="9" r="6"/><path d="m14 14 4 4"/></svg>
+          <input id="${opts.key}-q" type="search" placeholder="Search name or Paldex #" aria-label="Search Pals" autocomplete="off"></label>
+        <select id="${opts.key}-status" aria-label="Status" hidden>${STATUS_OPTS.map(o=>`<option value="${o[0]}">${o[1]}</option>`).join('')}</select>
+        <button class="iconbtn" data-act="fold" aria-expanded="true">Filters <span data-active></span></button>
+      </div>
+      <div class="fgroup" data-fold>
+        <div class="frow"><span class="flabel">Element</span><div class="ibar" role="group" aria-label="Element">${[...EL_ORDER].map(e=>`<button class="ib" data-el="${e}" aria-pressed="false" title="${EL[e]}" aria-label="${EL[e]}" style="--c:var(--el-${e})"><img src="${UIICON.el[e]}" alt=""></button>`).join('')}<span class="picked" data-picked="el"></span></div></div>
+        <div class="frow"><span class="flabel">Rarity</span><div class="rseg" role="group" aria-label="Rarity">${RAR_OPTS.slice(1).map(o=>`<button data-rar="${o[0]}" aria-pressed="false" title="${o[1]}" style="--c:var(--r-${o[0]})"><i></i>${o[1].split(' ')[0]}</button>`).join('')}</div></div>
+        <div class="frow"><span class="flabel">Work</span><div class="ibar" role="group" aria-label="Work suitability">${WORK.map((w,i)=>`<button class="ib" data-work="${i}" aria-pressed="false" title="${w[1]}" aria-label="${w[1]}" style="--c:var(--accent)"><img src="${UIICON.work[i]}" alt=""></button>`).join('')}<button class="match" data-act="workall" title="With several work types picked: match Pals that have any of them, or all of them"></button><span class="picked" data-picked="work"></span></div></div>
+      </div>
+      <div class="row">
+        <select id="${opts.key}-sort" aria-label="Sort by">${SORTS.map(o=>`<option value="${o[0]}">Sort: ${o[1]}</option>`).join('')}</select>
+        <button class="iconbtn" data-act="dir" title="Reverse order" aria-label="Reverse order"></button>
+        <button class="iconbtn" data-act="group" aria-pressed="false" title="Group by element">Group</button>
+        <button class="iconbtn" data-act="view" title="Switch grid or list"></button>
+        <button class="linkbtn" data-act="clear">Clear filters</button>
+        <span class="count" data-count></span>
+      </div>
+    </div>
+    <div class="grid" role="list"></div>`);
+  const $=s=>host.querySelector(s);const grid=$('.grid');
+  const q=$(`#${opts.key}-q`),selS=$(`#${opts.key}-status`),selSort=$(`#${opts.key}-sort`);
+  function syncControls(){selS.value=st.status;selSort.value=st.sort;
+    host.querySelectorAll('[data-el]').forEach(b=>b.setAttribute('aria-pressed',st.els.includes(b.dataset.el)));
+    host.querySelectorAll('[data-rar]').forEach(b=>b.setAttribute('aria-pressed',st.rars.includes(b.dataset.rar)));
+    host.querySelectorAll('[data-work]').forEach(b=>b.setAttribute('aria-pressed',st.works.includes(+b.dataset.work)));
+    $('[data-picked=el]').textContent=st.els.map(e=>EL[e]).join(', ');
+    $('[data-picked=work]').textContent=st.works.map(w=>WORK[w][1]).join(', ');
+    const wa=$('[data-act=workall]');wa.textContent=st.workAll?'Match: all':'Match: any';wa.hidden=st.works.length<2;
+    const nAct=st.els.length+st.rars.length+st.works.length;$('[data-active]').textContent=nAct?`· ${nAct}`:'';
+    $('[data-fold]').hidden=st.fold;$('[data-act=fold]').setAttribute('aria-expanded',!st.fold);$('[data-act=fold]').setAttribute('aria-pressed',nAct>0);
+    $('[data-act=dir]').textContent=st.dir>0?'↑ Asc':'↓ Desc';
+    $('[data-act=group]').setAttribute('aria-pressed',st.group);
+    $('[data-act=view]').textContent=st.view==='grid'?'▤ List':'▦ Grid';
+    host.querySelectorAll('[data-seg]').forEach(b=>b.setAttribute('aria-pressed',b.dataset.seg===st.status));
+    const n={all:PALS.length,owned:PALS.filter(p=>owned.has(p.id)).length};n.missing=n.all-n.owned;n.breedable=[...plan.cost.keys()].filter(id=>!owned.has(id)).length;n.nopath=n.all-plan.cost.size;
+    host.querySelectorAll('[data-segn]').forEach(s=>s.textContent=n[s.dataset.segn]);}
+  function filtered(){
+    const term=q.value.trim().toLowerCase();
+    let list=PALS.filter(p=>{
+      if(term&&!(p.name.toLowerCase().includes(term)||String(p.idx)===term.replace('#','')||p.id.includes(term)))return false;
+      if(st.els.length&&!st.els.some(e=>p.el.includes(e)))return false;
+      if(st.rars.length&&!st.rars.includes(RARITY(p.rar)[1]))return false;
+      if(st.works.length&&!(st.workAll?st.works.every(w=>p.work[w]):st.works.some(w=>p.work[w])))return false;
+      const o=owned.has(p.id),c=plan.cost.has(p.id);
+      if(st.status==='missing'&&o)return false;
+      if(st.status==='owned'&&!o)return false;
+      if(st.status==='breedable'&&(o||!c))return false;
+      if(st.status==='nopath'&&c)return false;
+      return true});
+    const cmpName=(a,b)=>a.idx-b.idx||a.v.localeCompare(b.v);
+    const by={dex:cmpName,name:(a,b)=>a.name.localeCompare(b.name),
+      type:(a,b)=>EL_ORDER.indexOf(a.el[0])-EL_ORDER.indexOf(b.el[0])||(a.el[1]?EL_ORDER.indexOf(a.el[1])+1:0)-(b.el[1]?EL_ORDER.indexOf(b.el[1])+1:0)||cmpName(a,b),
+      rarity:(a,b)=>a.rar-b.rar||cmpName(a,b),power:(a,b)=>a.rank-b.rank||cmpName(a,b),
+      steps:(a,b)=>(owned.has(a.id)?0:plan.cost.get(a.id)??999)-(owned.has(b.id)?0:plan.cost.get(b.id)??999)||cmpName(a,b),
+      work:(a,b)=>(st.works.length?wsum(b)-wsum(a):Math.max(...b.work)-Math.max(...a.work))||cmpName(a,b)};
+    function wsum(p){return st.works.reduce((s,w)=>s+p.work[w],0)}
+    list.sort((a,b)=>by[st.sort](a,b)*st.dir);
+    return list;
+  }
+  function render(){
+    syncControls();LS(key,{...st,q:''});
+    const list=filtered();grid.classList.toggle('list',st.view==='list');
+    $('[data-count]').textContent=`${list.length} of ${PALS.length}`;
+    if(!list.length){grid.innerHTML='<div class="empty">No Pals match these filters.</div>';return}
+    const sel=opts.selected?opts.selected():null;
+    const tile=p=>{const [stTxt,stCls]=statusOf(p.id);const pressed=opts.mode==='own'?owned.has(p.id):sel===p.id;
+      const wk=st.works.length?`<span class="wk">${st.works.filter(w=>p.work[w]).map(w=>WORK[w][1]+' <b>'+p.work[w]+'</b>').join(' · ')}</span>`:'';
+      const o=owned.has(p.id);
+      const btn=`<button class="tile ${opts.mode==='own'?'owned-mode'+(o?' is-owned':''):'has-tog'}" data-id="${p.id}" aria-pressed="${pressed}" title="${esc(p.name)} · ${p.el.map(e=>EL[e]).join('/')} · breed power ${p.rank}">
+        ${avatar(p)}<span class="meta"><span class="nm">${esc(p.name)}</span><span class="sub"><span class="mono">${dex(p)}</span>${pips(p)}${st.sort==='power'||st.view==='list'?`<span class="mono">BP ${p.rank}</span>`:''}<span class="status ${stCls}">${opts.mode==='own'?(o?'✓ Owned':'+ Add'):stTxt}</span></span>${wk}</span></button>`;
+      if(opts.mode==='own')return `<div class="tw" role="listitem">${btn}</div>`;
+      return `<div class="tw" role="listitem">${btn}<button class="owntog ${o?'on':''}" data-own="${p.id}" aria-pressed="${o}" title="${o?'Owned. Click to remove from My Pals':'Mark '+esc(p.name)+' as owned'}" aria-label="${o?'Remove '+esc(p.name)+' from My Pals':'Mark '+esc(p.name)+' as owned'}">${o?'✓':'+'}</button></div>`};
+    if(st.group){let html='';for(const e of EL_ORDER){const g=list.filter(p=>p.el[0]===e);if(!g.length)continue;
+        html+=`<div class="group-h"><span class="chip plain" style="border:0;padding:0;background:none"><span class="dot" style="width:12px;height:12px;border-radius:50%;background:var(--el-${e})"></span></span>${EL[e]} · ${g.length}</div>`+g.map(tile).join('')}
+      grid.innerHTML=html}
+    else grid.innerHTML=list.map(tile).join('');
+  }
+  q.addEventListener('input',render);
+  q.addEventListener('keydown',e=>{if(e.key==='Enter'){const f=grid.querySelector('.tile');if(f)f.click()}});
+  selS.onchange=()=>{st.status=selS.value;render()};
+  selSort.onchange=()=>{st.sort=selSort.value;st.dir=1;render()};
+  host.addEventListener('click',e=>{
+    const sg=e.target.closest('[data-seg]');if(sg){st.status=sg.dataset.seg;render();return}
+    const ot=e.target.closest('[data-own]');if(ot){toggleOwned(ot.dataset.own);return}
+    const rb=e.target.closest('[data-rar]');if(rb){const v=rb.dataset.rar;st.rars=st.rars.includes(v)?st.rars.filter(x=>x!==v):[...st.rars,v];render();return}
+    const wb=e.target.closest('[data-work]');if(wb){const v=+wb.dataset.work;st.works=st.works.includes(v)?st.works.filter(x=>x!==v):[...st.works,v];if(st.works.length&&st.sort==='dex')st.sort='work';if(!st.works.length&&st.sort==='work')st.sort='dex';render();return}
+    const el=e.target.closest('[data-el]');if(el){const v=el.dataset.el;st.els=st.els.includes(v)?st.els.filter(x=>x!==v):[...st.els,v];render();return}
+    const act=e.target.closest('[data-act]')?.dataset.act;
+    if(act==='dir'){st.dir*=-1;render()}else if(act==='view'){st.view=st.view==='grid'?'list':'grid';render()}
+    else if(act==='group'){st.group=!st.group;render()}
+    else if(act==='fold'){st.fold=!st.fold;render()}
+    else if(act==='workall'){st.workAll=!st.workAll;render()}
+    else if(act==='clear'){Object.assign(st,{els:[],rars:[],works:[],workAll:false,status:opts.defaultStatus||'all'});if(st.sort==='work')st.sort='dex';q.value='';render()}
+    const t=e.target.closest('.tile');if(t)opts.onPick(t.dataset.id);
+  });
+  return {render,filtered};
+}
+
+/* ---------- path finder view ---------- */
+const pathPicker=makePicker(document.getElementById('pathPicker'),{key:'path',title:'Pick a Pal to breed',hint:'Status shows how many breeds each Pal needs from what you own.',
+  selected:()=>ui.target,onPick:id=>{ui.target=id;ui.alt=null;ui.altShow=30;saveUI();pathPicker.render();renderPath();if(innerWidth<=900)document.getElementById('pathResult').scrollIntoView({behavior:'smooth'})}});
+
+function factsBlock(p){
+  return heroBlock(p);}
+function heroBlock(p){
+  const work=p.work.map((v,i)=>v?`<span>${WORK[i][1]} <b>${v}</b></span>`:'').join('');
+  return `<div class="hero">${avatar(p,'lg')}<div style="min-width:0"><h3>${esc(p.name)}</h3>
+      <div class="line"><span class="tag mono">${dex(p)}</span>${p.el.map(e=>`<span class="tag eltag" style="background:var(--el-${e})"><img src="${UIICON.el[e]}" alt="">${EL[e]}</span>`).join('')}
+      <span class="tag" style="color:var(--r-${RARITY(p.rar)[1]})">${RARITY(p.rar)[0]} · ${p.rar}</span>${p.mount?`<span class="tag">${p.mount==='f'?'Flying mount':'Ground mount'}</span>`:''}</div></div><div style="margin-left:auto;align-self:flex-start">${ownBtn(p.id)}</div></div>
+    ${work?`<div class="work">${work}</div>`:''}`;
+}
+function renderPath(){
+  const host=document.getElementById('pathResult');const p=BY[ui.target];
+  if(!p){host.innerHTML='<div class="placeholder"><b>Pick a Pal</b>Choose any Pal on the left to see how to breed it.</div>';return}
+  const isOwned=owned.has(p.id),cost=plan.cost.get(p.id);
+  let body='';
+  // alternatives
+  const alts=[];
+  for(let i=0;i<PALS.length;i++)for(let j=i;j<PALS.length;j++){const a=PALS[i].id,b=PALS[j].id;
+    for(const o of outcomes(a,b)){if(o.child!==p.id||(a===b&&a===p.id))continue;
+      const ca=plan.cost.get(a),cb=plan.cost.get(b);const reach=ca!==undefined&&cb!==undefined;
+      alts.push({a,b,ga:o.ga,gb:o.gb,reach,c:reach?(a===b?ca:ca+cb)+1:Infinity})}}
+  alts.sort((x,y)=>x.c-y.c||BY[x.a].name.localeCompare(BY[y.a].name));
+  const chosen=ui.alt&&alts.find(x=>x.a===ui.alt.a&&x.b===ui.alt.b&&x.ga===ui.alt.ga)&&ui.alt.reach!==false?ui.alt:null;
+  const steps=isOwned&&!chosen?[]:cost!==undefined||chosen?buildSteps(p.id,chosen):[];
+  const gens=(()=>{if(!steps.length)return 0;const g=new Map();for(const s of steps){g.set(s.child,1+Math.max(g.get(s.a)||0,g.get(s.b)||0))}return g.get(p.id)})();
+  const direct=alts.filter(x=>owned.has(x.a)&&owned.has(x.b)).length;
+  body+=`<div class="facts">
+    <div class="fact"><div class="k">Breeds needed</div><div class="v">${isOwned?'0':steps.length||'—'}</div></div>
+    <div class="fact"><div class="k">Generations</div><div class="v">${isOwned?'0':gens||'—'}</div></div>
+    <div class="fact"><div class="k">Breed power</div><div class="v">${p.rank}</div></div>
+    <div class="fact"><div class="k">Owned pairs</div><div class="v">${direct}</div></div></div>`;
+  if(isOwned&&!chosen)body+=`<div class="callout ok">You already own ${esc(p.name)}. Pick a parent pair below to see how you would breed another one.</div>`;
+  else if(!steps.length)body+=`<div class="callout warn">${esc(p.name)} can't be bred from the Pals you own yet. ${alts.length?'The pairs below show which parents you would need to catch.':'It only comes from capture.'}</div>`;
+  if(steps.length){
+    const made=new Set(steps.map(s=>s.child));
+    body+=`<div class="sec-h"><h4>Breeding steps</h4><span class="hint">Follow in order. Tap any Pal to jump to it.</span></div><ol class="steps">`+steps.map((s,i)=>{
+      const fin=i===steps.length-1;const k=x=>owned.has(x)?'':made.has(x)?'made':'';
+      return `<li class="step ${fin?'final':''}"><span class="n">${i+1}</span><div class="eq">${pchip(s.a,k(s.a))}${s.ga?`<b>${gsym(s.ga)}</b>`:''}<span class="op">×</span>${pchip(s.b,k(s.b))}${s.gb?`<b>${gsym(s.gb)}</b>`:''}<span class="op">→</span>${pchip(s.child,'child')}</div></li>`}).join('')+`</ol>`;
+  }
+  if(alts.length){
+    const only=ui.altOnlyReach;const shown=alts.filter(x=>!only||x.reach);
+    body+=`<div class="sec-h"><h4>All parent pairs</h4><span class="hint">${alts.length} ${alts.length===1?"pair makes":"pairs make"} ${esc(p.name)}</span>
+      <label class="hint" style="margin-left:auto;display:flex;gap:6px;align-items:center"><input type="checkbox" id="altOnly" ${only?'checked':''}> Only pairs I can get</label></div>
+      <div class="alts">${shown.slice(0,ui.altShow).map(x=>{const on=chosen&&x.a===chosen.a&&x.b===chosen.b&&x.ga===chosen.ga;
+        const tag=owned.has(x.a)&&owned.has(x.b)?'Both owned':x.reach?`${x.c} breed${x.c===1?'':'s'}`:'Need to catch';
+        return `<div class="alt ${on?'on':''}">${pchip(x.a)}${x.ga?`<b>${gsym(x.ga)}</b>`:''}<span class="op">×</span>${pchip(x.b)}${x.gb?`<b>${gsym(x.gb)}</b>`:''}<span class="cost">${tag}</span>${x.reach?`<button class="btn sm ${on?'':'ghost'}" data-alt='${JSON.stringify({a:x.a,b:x.b,ga:x.ga,gb:x.gb})}'>${on?'Using':'Use'}</button>`:''}</div>`}).join('')||'<div class="hint">No pair is reachable with your Pals yet. Untick the box to see every pair.</div>'}</div>
+      ${shown.length>ui.altShow?`<button class="linkbtn" data-more>Show ${Math.min(30,shown.length-ui.altShow)} more of ${shown.length-ui.altShow}</button>`:''}`;
+  }
+  host.innerHTML=`<div class="res">${factsBlock(p)}${body}</div>`;
+}
+document.getElementById('pathResult').addEventListener('click',e=>{
+  const ob=e.target.closest('[data-own]');if(ob){toggleOwned(ob.dataset.own);return}
+  const g=e.target.closest('[data-goto]');if(g){ui.target=g.dataset.goto;ui.alt=null;ui.altShow=30;saveUI();pathPicker.render();renderPath();document.getElementById('pathResult').scrollTop=0;return}
+  const a=e.target.closest('[data-alt]');if(a){const v=JSON.parse(a.dataset.alt);const same=ui.alt&&ui.alt.a===v.a&&ui.alt.b===v.b&&ui.alt.ga===v.ga;ui.alt=same?null:v;renderPath();return}
+  if(e.target.closest('[data-more]')){ui.altShow+=30;renderPath()}
+});
+document.getElementById('pathResult').addEventListener('change',e=>{if(e.target.id==='altOnly'){ui.altOnlyReach=e.target.checked;ui.altShow=30;saveUI();renderPath()}});
+
+/* ---------- calculator view ---------- */
+const calcPicker=makePicker(document.getElementById('calcPicker'),{key:'calc',title:'Choose parents',hint:'Pick a slot on the right, then click a Pal here.',
+  selected:()=>ui.slot==='A'?ui.calcA:ui.calcB,onPick:id=>{if(ui.slot==='A'){ui.calcA=id;ui.slot='B'}else{ui.calcB=id}saveUI();calcPicker.render();renderCalc()}});
+let partnerSort={k:'child',d:1};
+function renderCalc(){
+  const host=document.getElementById('calcResult');const A=BY[ui.calcA],B=BY[ui.calcB];
+  const slot=(s,p,g)=>`<button class="slot ${ui.slot===s?'active':''}" data-slot="${s}"><span class="lbl"><span>Parent ${s}</span><span>${ui.slot===s?'Picking':''}</span></span>
+    <span class="who">${p?avatar(p):''}<span>${p?esc(p.name):'Choose a Pal'}</span></span>${p?`<span class="hint mono">${dex(p)} · BP ${p.rank}</span>`:''}</button>`;
+  let html=`<div class="res"><div class="slots">${slot('A',A)}<div class="mid"><button class="gbtn" data-swapg title="Swap genders">${ui.ga==='M'?'♂':'♀'} × ${ui.gb==='M'?'♂':'♀'}</button><button class="gbtn" data-swap title="Swap parents">⇄</button></div>${slot('B',B)}</div>`;
+  if(A&&B){const c=BY[breed(A.id,B.id,ui.ga,ui.gb)];const other=BY[breed(A.id,B.id,ui.gb,ui.ga)];
+    html+=`<div class="result-card">${avatar(c,'lg')}<div style="min-width:0;flex:1"><div class="hint">Child</div><h3>${esc(c.name)}</h3><div class="hint">${c.el.map(e=>EL[e]).join(' / ')} · ${RARITY(c.rar)[0]} · BP ${c.rank}${owned.has(c.id)?' · <b style="color:var(--ok)">Owned</b>':''}</div></div><div style="display:grid;gap:6px;justify-items:end">${ownBtn(c.id)}<button class="btn sm ghost" data-path="${c.id}">Path to it</button></div></div>`;
+    if(other.id!==c.id)html+=`<div class="callout warn">Gender matters for this pair. With genders swapped you get ${esc(other.name)}.</div>`;
+  }
+  if(A){
+    const rows=[...owned].map(id=>{const o=outcomes(A.id,id);return {p:BY[id],c:BY[o[0].child],c2:o[1]?BY[o[1].child]:null}});
+    const k=partnerSort.k,d=partnerSort.d;
+    rows.sort((x,y)=>(k==='partner'?x.p.name.localeCompare(y.p.name):k==='bp'?x.c.rank-y.c.rank:k==='new'?(owned.has(x.c.id)-owned.has(y.c.id)):x.c.name.localeCompare(y.c.name))*d||x.c.name.localeCompare(y.c.name));
+    const fresh=new Set(rows.filter(r=>!owned.has(r.c.id)).map(r=>r.c.id)).size;
+    html+=`<div class="sec-h"><h4>${esc(A.name)} with each Pal you own</h4><span class="hint">${fresh} new Pal${fresh===1?'':'s'} possible</span></div>
+      <div class="table-wrap"><table><thead><tr><th data-ps="partner">Partner</th><th data-ps="child">Child</th><th data-ps="bp">Child BP</th><th data-ps="new">Status</th></tr></thead><tbody>
+      ${rows.map(r=>`<tr class="clickable" data-partner="${r.p.id}"><td>${esc(r.p.name)}</td><td>${esc(r.c.name)}${r.c2?` <span class="hint">or ${esc(r.c2.name)}</span>`:''}</td><td class="num">${r.c.rank}</td><td>${owned.has(r.c.id)?'<span class="status st-own">Owned</span>':`<span class="status st-breed">New</span> <button class="linkbtn" data-own="${r.c.id}">Mark owned</button>`}</td></tr>`).join('')}
+      </tbody></table></div>`;
+  }
+  host.innerHTML=html+'</div>';
+}
+document.getElementById('calcResult').addEventListener('click',e=>{
+  const ob=e.target.closest('[data-own]');if(ob){toggleOwned(ob.dataset.own);return}
+  const s=e.target.closest('[data-slot]');if(s){ui.slot=s.dataset.slot;saveUI();calcPicker.render();renderCalc();return}
+  if(e.target.closest('[data-swap]')){[ui.calcA,ui.calcB]=[ui.calcB,ui.calcA];saveUI();calcPicker.render();renderCalc();return}
+  if(e.target.closest('[data-swapg]')){[ui.ga,ui.gb]=[ui.gb,ui.ga];renderCalc();return}
+  const pth=e.target.closest('[data-path]');if(pth){ui.target=pth.dataset.path;ui.alt=null;saveUI();location.hash='#path';return}
+  const ps=e.target.closest('[data-ps]');if(ps){partnerSort=partnerSort.k===ps.dataset.ps?{k:ps.dataset.ps,d:-partnerSort.d}:{k:ps.dataset.ps,d:1};renderCalc();return}
+  const tr=e.target.closest('[data-partner]');if(tr){ui.calcB=tr.dataset.partner;saveUI();calcPicker.render();renderCalc();document.getElementById('calcResult').scrollTop=0}
+});
+
+/* ---------- my pals view ---------- */
+const palsPicker=makePicker(document.getElementById('palsPicker'),{key:'pals',mode:'own',onPick:id=>{owned.has(id)?owned.delete(id):owned.add(id);ownedChanged()}});
+function parseImport(text){
+  let t=text.trim();const m=t.match(/[?&]own=([^&#\s]+)/);if(m)t=decodeURIComponent(m[1]);
+  const byName=new Map(PALS.map(p=>[p.name.toLowerCase(),p.id]));
+  const found=[],miss=[];
+  for(const raw of t.split(/[,\n;]+/)){const s=raw.trim().toLowerCase();if(!s)continue;const id=BY[s]?s:byName.get(s);id?found.push(id):miss.push(raw.trim())}
+  return {found,miss};
+}
+function doImport(replace){const {found,miss}=parseImport(document.getElementById('importText').value);
+  if(!found.length){toast(miss.length?`No Pals recognised (${miss.slice(0,3).join(', ')})`:'Paste a link or names first');return}
+  if(replace)owned=new Set(found);else found.forEach(id=>owned.add(id));
+  ownedChanged();toast(`${found.length} Pals ${replace?'loaded':'added'}${miss.length?` · ${miss.length} not recognised`:''}`)}
+document.getElementById('importAdd').onclick=()=>doImport(false);
+document.getElementById('importReplace').onclick=()=>doImport(true);
+document.getElementById('markAll').onclick=()=>{const l=palsPicker.filtered();l.forEach(p=>owned.add(p.id));ownedChanged();toast(`Marked ${l.length} as owned`)};
+document.getElementById('unmarkAll').onclick=()=>{const l=palsPicker.filtered();l.forEach(p=>owned.delete(p.id));ownedChanged();toast(`Unmarked ${l.length}`)};
+document.getElementById('resetOwned').onclick=()=>{owned=new Set(START_OWNED.filter(id=>BY[id]));ownedChanged();toast('Back to the starting list')};
+document.getElementById('copyLink').onclick=async()=>{const url='https://palworld.gg/breeding-path?own='+[...owned].join(',');
+  try{await navigator.clipboard.writeText(url);toast('Link copied')}catch(e){const ta=document.getElementById('importText');ta.value=url;ta.focus();ta.select();toast('Link placed in the box. Copy it from there.')}};
+
+/* ---------- wiring ---------- */
+function ownedChanged(){LS('pbp-owned',[...owned]);solve();refreshAll()}
+function refreshAll(){
+  document.getElementById('ownedCount').textContent=owned.size;
+  document.getElementById('reachCount').textContent=[...plan.cost.keys()].filter(id=>!owned.has(id)).length;
+  const tab=currentTab();
+  if(tab==='path'){pathPicker.render();renderPath()}else if(tab==='calculator'){calcPicker.render();renderCalc()}else palsPicker.render();
+}
+const TABS=['path','calculator','my-pals'];
+function currentTab(){const h=location.hash.slice(1);return TABS.includes(h)?h:'path'}
+function route(){const t=currentTab();for(const x of TABS)document.getElementById('v-'+x).hidden=x!==t;
+  document.querySelectorAll('[data-tab]').forEach(a=>{if(a.dataset.tab===t)a.setAttribute('aria-current','page');else a.removeAttribute('aria-current')});
+  refreshAll()}
+addEventListener('hashchange',route);
+solve();route();
+</script>
