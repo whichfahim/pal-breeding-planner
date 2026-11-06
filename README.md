@@ -2,6 +2,8 @@
 
 A fast, filterable breeding planner for **Palworld**. Mark the Pals you own, pick the one you want, and get the shortest breeding route.
 
+Preview: https://whichfahim.github.io/pal-breeding-planner/
+
 ## Features
 
 - **Path finder**: the fewest breeds needed to reach any Pal from the ones you own, shown as ordered steps, plus every parent pair that produces it.
