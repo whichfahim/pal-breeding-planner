@@ -120,7 +120,15 @@ select{padding:7px 8px;border:1px solid var(--line);border-radius:10px;backgroun
 .grid.list .tile.has-tog{padding-right:34px}
 .grid.list .tile.has-tog .nm{padding-right:0}
 .wk{font-size:11px;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.fgroup{display:grid;gap:6px}
+.fgroup{display:grid;grid-template-rows:1fr;opacity:1;transition:grid-template-rows .35s cubic-bezier(.3,.8,.25,1),opacity .25s ease}
+.fgroup.closed{grid-template-rows:0fr;opacity:0;pointer-events:none}
+.finner{display:grid;gap:6px;min-height:0;overflow:hidden}
+.fgroup:not(.closed) .finner{overflow:visible}
+.foldbtn{gap:7px}
+.foldbtn .fic{width:16px;height:16px;flex:none}
+.foldbtn .chev{width:15px;height:15px;flex:none;transition:transform .35s cubic-bezier(.3,.8,.25,1)}
+.foldbtn[aria-expanded="false"] .chev{transform:rotate(-90deg)}
+.foldbtn:hover .chev{color:var(--accent-text)}
 .frow{display:grid;grid-template-columns:58px minmax(0,1fr);gap:8px;align-items:start}
 .flabel{font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);padding-top:5px}
 @media (max-width:480px){.frow{grid-template-columns:52px minmax(0,1fr);gap:4px}.ib{width:30px;height:30px}.ib img{width:22px;height:22px}.flabel{font-size:10px}.rseg button{padding:5px 7px}}
@@ -168,7 +176,6 @@ select{padding:7px 8px;border:1px solid var(--line);border-radius:10px;backgroun
 .fact .v{font-family:var(--f-display);font-size:20px;font-weight:800;font-variant-numeric:tabular-nums}
 .worksec{display:grid;gap:6px}
 .wlabel{font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:700}
-.wlabel span{text-transform:none;letter-spacing:0;font-weight:500}
 .work{display:flex;gap:6px;flex-wrap:wrap}
 .wchip{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:3px 4px 3px 4px;font-size:12.5px;font-weight:600;white-space:nowrap}
 .wchip img{width:22px;height:22px;filter:var(--icon-ol)}
@@ -411,13 +418,13 @@ function makePicker(host,opts){
         <label class="search"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="9" r="6"/><path d="m14 14 4 4"/></svg>
           <input id="${opts.key}-q" type="search" placeholder="Search name or Paldex #" aria-label="Search Pals" autocomplete="off"></label>
         <select id="${opts.key}-status" aria-label="Status" hidden>${STATUS_OPTS.map(o=>`<option value="${o[0]}">${o[1]}</option>`).join('')}</select>
-        <button class="iconbtn" data-act="fold" aria-expanded="true">Filters <span data-active></span></button>
+        <button class="iconbtn foldbtn" data-act="fold" aria-expanded="true" aria-controls="${opts.key}-fgroup" title="Show or hide filters"><svg class="fic" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M3 5h8M15 5h2M3 10h3M10 10h7M3 15h9M16 15h1"/><circle cx="13" cy="5" r="2"/><circle cx="8" cy="10" r="2"/><circle cx="14" cy="15" r="2"/></svg>Filters <span data-active></span><svg class="chev" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 8 5 5 5-5"/></svg></button>
       </div>
-      <div class="fgroup" data-fold>
+      <div class="fgroup" data-fold id="${opts.key}-fgroup"><div class="finner">
         <div class="frow"><span class="flabel">Element</span><div class="ibar" role="group" aria-label="Element">${[...EL_ORDER].map(e=>`<button class="ib" data-el="${e}" aria-pressed="false" title="${EL[e]}" aria-label="${EL[e]}" style="--c:var(--el-${e})"><img src="${UIICON.el[e]}" alt=""></button>`).join('')}<span class="picked" data-picked="el"></span></div></div>
         <div class="frow"><span class="flabel">Rarity</span><div class="rseg" role="group" aria-label="Rarity">${RAR_OPTS.slice(1).map(o=>`<button data-rar="${o[0]}" aria-pressed="false" title="${o[1]}" style="--c:var(--r-${o[0]})"><i></i>${o[1].split(' ')[0]}</button>`).join('')}</div></div>
         <div class="frow"><span class="flabel">Work</span><div class="ibar" role="group" aria-label="Work suitability">${WORK.map((w,i)=>`<button class="ib" data-work="${i}" aria-pressed="false" title="${w[1]}" aria-label="${w[1]}" style="--c:var(--accent)"><img src="${UIICON.work[i]}" alt=""></button>`).join('')}<button class="match" data-act="workall" title="With several work types picked: match Pals that have any of them, or all of them"></button><span class="picked" data-picked="work"></span></div></div>
-      </div>
+      </div></div>
       <div class="row">
         <select id="${opts.key}-sort" aria-label="Sort by">${SORTS.map(o=>`<option value="${o[0]}">Sort: ${o[1]}</option>`).join('')}</select>
         <button class="iconbtn" data-act="dir" title="Reverse order" aria-label="Reverse order"></button>
@@ -438,7 +445,7 @@ function makePicker(host,opts){
     $('[data-picked=work]').textContent=st.works.map(w=>WORK[w][1]).join(', ');
     const wa=$('[data-act=workall]');wa.textContent=st.workAll?'Match: all':'Match: any';wa.hidden=st.works.length<2;
     const nAct=st.els.length+st.rars.length+st.works.length;$('[data-active]').textContent=nAct?`· ${nAct}`:'';
-    $('[data-fold]').hidden=st.fold;$('[data-act=fold]').setAttribute('aria-expanded',!st.fold);$('[data-act=fold]').setAttribute('aria-pressed',nAct>0);
+    setFold(!!st.fold);$('[data-act=fold]').setAttribute('aria-expanded',!st.fold);$('[data-act=fold]').setAttribute('aria-pressed',nAct>0);
     $('[data-act=dir]').textContent=st.dir>0?'↑ Asc':'↓ Desc';
     $('[data-act=group]').setAttribute('aria-pressed',st.group);
     $('[data-act=view]').textContent=st.view==='grid'?'▤ List':'▦ Grid';
@@ -469,6 +476,10 @@ function makePicker(host,opts){
     return list;
   }
   let animateNext=false;
+  function setFold(closed){const fg=$('[data-fold]');const isClosed=fg.classList.contains('closed');if(closed===isClosed&&fg.dataset.ready)return;
+    const first=!fg.dataset.ready;fg.dataset.ready=1;fg.inert=closed;clearTimeout(fg._t);
+    if(closed){fg.classList.add('closed');if(first){fg.hidden=true}else{fg._t=setTimeout(()=>{if(fg.classList.contains('closed'))fg.hidden=true},380)}}
+    else{fg.hidden=false;void fg.offsetHeight;fg.classList.remove('closed')}}
   function render(){
     syncControls();glide(host.querySelector('.seg'),host.querySelector('[data-seg][aria-pressed="true"]'));LS(key,{...st,q:''});
     const list=filtered();grid.classList.toggle('list',st.view==='list');
@@ -522,7 +533,7 @@ function heroBlock(p){
   return `<div class="hero">${avatar(p,'lg')}<div style="min-width:0"><h3>${esc(p.name)}</h3>
       <div class="line"><span class="tag mono">${dex(p)}</span>${p.el.map(e=>`<span class="tag eltag" style="background:var(--el-${e})"><img src="${UIICON.el[e]}" alt="">${EL[e]}</span>`).join('')}
       <span class="tag" style="color:var(--r-${RARITY(p.rar)[1]})">${RARITY(p.rar)[0]} · ${p.rar}</span>${p.mount?`<span class="tag">${p.mount==='f'?'Flying mount':'Ground mount'}</span>`:''}</div></div><div style="margin-left:auto;align-self:flex-start">${ownBtn(p.id)}</div></div>
-    ${work?`<div class="worksec"><div class="wlabel">Work suitability <span>· Lv is the skill level; higher works faster and unlocks tougher jobs</span></div><div class="work">${work}</div></div>`:''}`;
+    ${work?`<div class="worksec"><div class="wlabel">Work suitability</div><div class="work">${work}</div></div>`:''}`;
 }
 let lastTarget=null;
 function renderPath(){
