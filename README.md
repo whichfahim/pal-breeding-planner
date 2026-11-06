@@ -2,8 +2,6 @@
 
 A fast, filterable breeding planner for **Palworld**. Mark the Pals you own, pick the one you want, and get the shortest breeding route.
 
-Preview: https://whichfahim.github.io/pal-breeding-planner/
-
 ## Features
 
 - **Path finder**: the fewest breeds needed to reach any Pal from the ones you own, shown as ordered steps, plus every parent pair that produces it.
@@ -26,7 +24,7 @@ data/pals.txt         id|name|paldex|variant|rarity|breed power|ignore|elements|
 data/combos.txt       unique breeding combos: parentA parentB child [genderA genderB]
 data/pal-icons.json   Pal icons as data URIs
 data/ui-icons.json    element and work icons as data URIs
-data/default-owned.txt starting collection for first-time visitors
+data/default-owned.txt optional starting collection for first-time visitors (empty by default)
 ```
 
 Edit anything in `src/` or `data/`, then run:
