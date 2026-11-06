@@ -6,8 +6,9 @@
 /* Palette and type follow Pocketpair's Palworld site: #333 ink on #f8f8f8, Palworld cyan #00b4cd for selection, signature red #ed2d34 for actions; M PLUS Rounded 1c display, Noto Sans JP body, Outfit for data labels.
    Layout: sticky top bar + two-pane workspace — a fixed-height, filterable pal picker on the left, a sticky result panel on the right. */
 :root{
-  --bg:#f8f8f8; --surface:#ffffff; --surface-2:#f0f0f0; --ink:#333333; --muted:#6e6e6e; --line:#dddddd;
-  --accent:#00b4cd; --accent-text:#007d8f; --accent-soft:#e2f6f9; --accent-ink:#ffffff; --red:#ed2d34; --red-ink:#ffffff; --dark:#222222;
+  --bg:#f6f2fb; --surface:#ffffff; --surface-2:#f1ecf8; --ink:#2b2a45; --muted:#6a6585; --line:#e6ddf0;
+  --accent:#7cc8f8; --accent-text:#2479b5; --accent-soft:#e4f4fe; --accent-ink:#ffffff; --red:#e8458f; --red-ink:#ffffff; --dark:#e8458f;
+  --top-bg:linear-gradient(90deg,#e4f4fe,#fde6f1); --top-line:#f4bcd8;
   --warn:#c2410c; --warn-soft:#fdeee4; --ok:#1e8a4a; --ok-soft:#e1f4e8;
   --r-common:#8a948f; --r-rare:#2c74cf; --r-epic:#8848cf; --r-legend:#c98a0c;
   --el-N:#9c9584; --el-F:#e25c2a; --el-W:#2d8ade; --el-G:#45a649; --el-E:#d9b10e; --el-I:#4fbfd4; --el-R:#a26c33; --el-D:#6a4d9a; --el-Y:#b0469f;
@@ -16,26 +17,31 @@
 }
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
   --bg:#181818; --surface:#222222; --surface-2:#2c2c2c; --ink:#eeeeee; --muted:#a3a3a3; --line:#3a3a3a;
-  --accent:#00b4cd; --accent-text:#4fd3e6; --accent-soft:#0d3237; --accent-ink:#ffffff; --red:#ef3d43; --red-ink:#ffffff; --dark:#111111;
+  --accent:#00b4cd; --accent-text:#4fd3e6; --accent-soft:#0d3237; --accent-ink:#ffffff; --red:#ef3d43; --red-ink:#ffffff; --dark:#111111; --top-bg:var(--surface); --top-line:var(--accent);
   --warn:#f59e6b; --warn-soft:#3a2418; --ok:#5fd18f; --ok-soft:#173022;
   --r-common:#9aa5a0; --r-rare:#5b9cf0; --r-epic:#b07ff0; --r-legend:#f0b53a; --shadow:0 1px 2px rgba(0,0,0,.3),0 8px 24px rgba(0,0,0,.25); color-scheme:dark}}
 :root[data-theme="dark"]{
   --bg:#181818; --surface:#222222; --surface-2:#2c2c2c; --ink:#eeeeee; --muted:#a3a3a3; --line:#3a3a3a;
-  --accent:#00b4cd; --accent-text:#4fd3e6; --accent-soft:#0d3237; --accent-ink:#ffffff; --red:#ef3d43; --red-ink:#ffffff; --dark:#111111;
+  --accent:#00b4cd; --accent-text:#4fd3e6; --accent-soft:#0d3237; --accent-ink:#ffffff; --red:#ef3d43; --red-ink:#ffffff; --dark:#111111; --top-bg:var(--surface); --top-line:var(--accent);
   --warn:#f59e6b; --warn-soft:#3a2418; --ok:#5fd18f; --ok-soft:#173022;
   --r-common:#9aa5a0; --r-rare:#5b9cf0; --r-epic:#b07ff0; --r-legend:#f0b53a; --shadow:0 1px 2px rgba(0,0,0,.3),0 8px 24px rgba(0,0,0,.25); color-scheme:dark}
 *{box-sizing:border-box}
 [hidden]{display:none!important}
 html,body{height:100%}
 body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:14px;line-height:1.45}
-body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--surface)}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--top-bg)}
 button,input,select,textarea{font:inherit;color:inherit}
 button{cursor:pointer}
 :focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 .wrap{padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
 
 /* top bar */
-.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--surface);border-bottom:3px solid var(--accent)}
+.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--top-bg);border-bottom:3px solid var(--top-line)}
+.themebtn{width:36px;height:36px;border-radius:50%;border:1px solid var(--line);background:var(--surface);color:var(--ink);display:grid;place-items:center;padding:0}
+.themebtn svg{width:18px;height:18px}
+.themebtn:hover{border-color:var(--accent)}
+@media (max-width:700px){.top{position:static}.top .wrap{gap:8px 10px}.themebtn{order:1}.tabs{order:2;flex:1 1 100%}.tabs a{flex:1;text-align:center}.owned-pill{order:3}}
+@media (max-width:520px){.owned-pill{display:none}}
 .top .wrap{display:flex;align-items:center;gap:16px;flex-wrap:wrap;padding-block:10px;max-width:1440px;margin:0 auto}
 .brand{display:flex;align-items:center;gap:10px;margin-right:auto}
 .brand h1{font-family:var(--f-display);font-weight:800;font-size:21px;margin:0;letter-spacing:.2px}
@@ -224,6 +230,7 @@ footer{max-width:1440px;margin:0 auto;color:var(--muted);font-size:12.5px;paddin
       <a href="#my-pals" data-tab="my-pals">My Pals</a>
     </nav>
     <div class="owned-pill"><b id="ownedCount">0</b> owned · <b id="reachCount">0</b> breedable</div>
+    <button class="themebtn" id="themeBtn" type="button"></button>
   </div>
 </header>
 
@@ -600,6 +607,15 @@ function currentTab(){const h=location.hash.slice(1);return TABS.includes(h)?h:'
 function route(){const t=currentTab();for(const x of TABS)document.getElementById('v-'+x).hidden=x!==t;
   document.querySelectorAll('[data-tab]').forEach(a=>{if(a.dataset.tab===t)a.setAttribute('aria-current','page');else a.removeAttribute('aria-current')});
   refreshAll()}
+/* theme toggle: follows the device until the visitor picks one, then remembers it */
+const SUN='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4.5"/><path d="M12 2v2.5M12 19.5V22M2 12h2.5M19.5 12H22M4.9 4.9l1.8 1.8M17.3 17.3l1.8 1.8M4.9 19.1l1.8-1.8M17.3 6.7l1.8-1.8"/></svg>';
+const MOON='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5Z"/></svg>';
+const darkMQ=matchMedia('(prefers-color-scheme: dark)');
+function effectiveTheme(){return document.documentElement.dataset.theme||(darkMQ.matches?'dark':'light')}
+function paintThemeBtn(){const b=document.getElementById('themeBtn');const d=effectiveTheme()==='dark';b.innerHTML=d?SUN:MOON;const l=d?'Switch to light mode':'Switch to dark mode';b.title=l;b.setAttribute('aria-label',l)}
+(()=>{const s=LS('pbp-theme');if(s==='light'||s==='dark')document.documentElement.dataset.theme=s})();
+document.getElementById('themeBtn').onclick=()=>{const n=effectiveTheme()==='dark'?'light':'dark';document.documentElement.dataset.theme=n;LS('pbp-theme',n);paintThemeBtn()};
+darkMQ.addEventListener?.('change',paintThemeBtn);paintThemeBtn();
 addEventListener('hashchange',route);
 solve();route();
 </script>
