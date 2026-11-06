@@ -8,7 +8,8 @@ page = (page.replace("__PALS__", read("data/pals.txt"))
             .replace("__COMBOS__", read("data/combos.txt"))
             .replace("__OWNED__", owned)
             .replace("__ICONS__", read("data/pal-icons.json"))
-            .replace("__UIICON__", read("data/ui-icons.json")))
+            .replace("__UIICON__", read("data/ui-icons.json"))
+            .replace("__TOUCHICON__", read("data/touch-icon.txt").strip()))
 i = page.index("</style>") + len("</style>")
 html = ('<!doctype html>\n<html lang="en">\n<head>\n<meta charset="utf-8">\n'
         '<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">\n'
